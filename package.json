@@ -1,0 +1,22 @@
+{
+    "name": "Game.js",
+    "version": "1.0.0",
+    "description": "",
+    "main": "game.js",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "format": "prettier --write .",
+        "format:check": "prettier --check \"**/*.{html,css,js}\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "phaser": "^4.2.1",
+        "vite": "^8.2.2"
+    },
+    "devDependencies": {
+        "prettier": "^3.9.6"
+    }
+}

@@ -1,0 +1,79 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Prepare website files
+        run: |
+          mkdir -p deploy
+          
+          if [ -f index.html ]; then
+            cp index.html deploy/index.html
+          elif [ -f src/index.html ]; then
+            cp src/index.html deploy/index.html
+          fi
+          
+          if [ -f src/style.css ]; then
+            cp src/style.css deploy/style.css
+          elif [ -f style.css ]; then
+            cp style.css deploy/style.css
+          fi
+          
+          if [ -f src/game.js ]; then
+            cp src/game.js deploy/game.js
+          elif [ -f game.js ]; then
+            cp game.js deploy/game.js
+          fi
+          
+          # Public-Ordner mit allen Unterordnern kopieren
+          if [ -d public ]; then
+            cp -r public deploy/
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: deploy/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

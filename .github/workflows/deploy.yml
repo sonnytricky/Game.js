@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "src/**"
-
   workflow_dispatch:
 
 permissions:
@@ -26,40 +23,25 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
-      - name: Prepare website files
-        run: |
-          mkdir -p deploy
-          
-          if [ -f index.html ]; then
-            cp index.html deploy/index.html
-          elif [ -f src/index.html ]; then
-            cp src/index.html deploy/index.html
-          fi
-          
-          if [ -f src/style.css ]; then
-            cp src/style.css deploy/style.css
-          elif [ -f style.css ]; then
-            cp style.css deploy/style.css
-          fi
-          
-          if [ -f src/game.js ]; then
-            cp src/game.js deploy/game.js
-          elif [ -f game.js ]; then
-            cp game.js deploy/game.js
-          fi
-          
-          # Public-Ordner mit allen Unterordnern kopieren
-          if [ -d public ]; then
-            cp -r public deploy/
-          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: deploy/
+          path: dist/
 
   deploy:
     needs: build
